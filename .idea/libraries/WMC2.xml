@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="WMC2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Ertan_orf2.zip!/" />
+      <root url="jar://$PROJECT_DIR$/Ertan_travel.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -1,6 +1,4 @@
 // 1. APPLICATION STATE
-// - Holds the state of the application
-// - This is the single source of truth for the application  state
 const state = {
     todos: [
         { text: 'German', completed: false },
@@ -9,8 +7,6 @@ const state = {
 };
 
 // 2. STATE ACCESSORS/MUTATORS FN'S
-// - Functions that allow us to get and set the state
-// - Here we will create functions to add and remove todos
 function addTodo(text) {
     state.todos.push({ text, completed: false });
 }
@@ -24,24 +20,12 @@ function toggleTodoCompleted(index) {
 }
 
 // 3. DOM Node Refs
-// - Static references to DOM nodes needed after the start of the application
 const todoAdd$ = document.getElementById('todo-add');
 const todoInput$ = document.querySelector('#todo-input');
 const todoList$ = document.querySelector('#todo-list');
 const todoFilter$ = document.querySelector('#todo-filter');
 
 // 4. DOM Node Creation Fn's
-// - Dynamic creation of DOM nodes needed upon user interaction
-// - Here we will create a function that will create a todo item
-
-// Version: document.createElement(..)
-// function createTodoItem(todo) {
-//   const todoItem = document.createElement("li");
-//   todoItem.textContent = todo.text;
-//   return todoItem;
-// }
-
-// Version: DOM Template Strings
 function createTodoItem(todo) {
     return `
     <li>
@@ -59,58 +43,44 @@ function createTodoCheckBox(todo) {
 }
 
 // 5. RENDER FN
-// - These functions will render the application state to the DOM
-// - Here we will use a very naive but simple approach to re-render the list
-// - IMPORTANT TAKEAWAY: The state drives the UI, any state change should trigger a re-render of the UI
-
-// Version for: document.createElement(..)
-// function render() {
-//   todoList$.innerHTML = '';
-//   for (let todo of state.todos) {
-//     const todoItem = createTodoItem(todo);
-//     todoList$.appendChild(todoItem);
-//   }
-// }
-
-// Version for: DOM Template Strings
-// function render() {
-//   todoList$.innerHTML = '';
-//   for (const todo of state.todos) {
-//     todoList$.innerHTML += createTodoItem(todo);
-//   }
-// }
-
-// Version for: DOM Template Strings
 function render() {
     todoList$.innerHTML = state.todos.map(createTodoItem).join('\n');
 }
 
 // 6. EVENT HANDLERS
-// - These functions handle user interaction e.g. button clicks, key presses etc.
-// - These functions will call the state mutators and then call the render function
-// - The naming convention for the event handlers is `on<Event>`
-// - Here we will create a function that will handle the add button click
 function onAddTodo() {
     const text = todoInput$.value;
     if (text.trim() !== '') {
         todoInput$.value = '';
-        addTodo(text); // update state
-        render(); // update ui
+        addTodo(text);
+        render();
     }
 }
 
-function onRemoveTodo() {
-    // update state
-    // render
+function onRemoveTodo(index) {
+    removeTodo(index);
+    render();
 }
 
-function onToggleTodoCompleted() {
-    // update state
-    // render
+function onToggleTodoCompleted(index) {
+    toggleTodoCompleted(index);
+    render();
 }
 
-// 7. INIT BINDINGS
-// - These are the initial bindings of the event handlers
+todoList$.addEventListener('click', function(event) {
+    if (event.target && event.target.nodeName === 'LI') {
+        const index = Array.from(todoList$.children).indexOf(event.target);
+        onRemoveTodo(index);
+    }
+});
+
+todoList$.addEventListener('click', function(event) {
+    if (event.target && event.target.nodeName === 'INPUT' && event.target.type === 'checkbox') {
+        const index = Array.from(todoList$.querySelectorAll('input[type="checkbox"]')).indexOf(event.target);
+        onToggleTodoCompleted(index);
+    }
+});
+
 todoAdd$.addEventListener('click', function (event) {
     onAddTodo();
 });
@@ -122,5 +92,4 @@ todoInput$.addEventListener('keyup', function (event) {
 });
 
 // 8. INITIAL RENDER
-// - Here will call the render function to render the initial state of the application
 render();
